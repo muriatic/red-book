@@ -121,8 +121,6 @@ private:
 
 					col_buffer.push_back(Consume());
 				}
-				row_buffer.push_back(std::string(col_buffer.begin(), col_buffer.end()));
-				col_buffer.clear();
 			}
 
 			else 
