@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#include "vector_functions.h"
+
 struct Row
 {
 	std::vector<std::string> row {};
@@ -23,22 +25,52 @@ public:
 		m_fileName = fileName;
 		readCSV();
 		createCSVMatrix();
+	}
+	
+	// maybe not the best algorithm but oh well
+	std::vector<std::string> getColumn(std::string title)
+	{
+		std::vector<std::string> column;
+
+		// search first row
+		int columnIDX = IndexOf(rows[0].row, title);
+
+		if (columnIDX == -1)
+		{
+			std::cerr << "That particular column was not found." << std::endl;
+			exit(EXIT_FAILURE);
+		}
 
 		for (int i = 0; i < rows.size(); i++)
 		{
-			std::cout << std::endl;
-			std::cout << "Row" << i << std::endl;
-			for (int j = 0; j < rows[i].row.size(); j++)
-			{
-				if (rows[i].row[j] != "")
-				{
-					std::cout << rows[i].row[j] << std::endl;
-					continue;
-				}
-				std::cout << "Empty column" << std::endl;
-			}
+			column.push_back(rows[i].row[columnIDX]);
 		}
+		
+		return column;
 	}
+
+	std::vector<std::string> getColumn(unsigned int index)
+	{
+		std::vector<std::string> column;
+
+		if (index >= rows[0].row.size())
+		{
+			std::cerr << "That index is trying to access data outside the size of this array" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		// search first row
+		int columnIDX = index;
+
+		for (int i = 0; i < rows.size(); i++)
+		{
+			column.push_back(rows[i].row[columnIDX]);
+		}
+
+		return column;
+	}
+
+
 private:
 	std::string m_fileContents;
 	std::string m_fileName;
@@ -145,5 +177,3 @@ private:
 		return m_fileContents.at(m_index++);
 	}
 };
-
-
