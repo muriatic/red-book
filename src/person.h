@@ -1,6 +1,10 @@
+#ifndef PERSON_H
+#define PERSON_H
+
 #include <string>
 #include <vector>
 #include <sstream>
+#include <regex>
 
 
 std::vector<std::string> split(const std::string& s, char delim) {
@@ -9,6 +13,8 @@ std::vector<std::string> split(const std::string& s, char delim) {
 	std::string item;
 
 	while (getline(ss, item, delim)) {
+		// remove leading and trailing whitespace
+		item = std::regex_replace(item, std::regex("^ +| +$|( ) +"), "$1");
 		result.push_back(item);
 	}
 
@@ -20,7 +26,6 @@ class Person
 {
 	void parseRow(Row row)
 	{
-
 		name = row.getValue("Full Name");
 		majors = split(row.getValue("Major(s)"), '/');
 		minors = split(row.getValue("Minor(s)"), '/');
@@ -40,7 +45,6 @@ public:
 		parseRow(row);
 	}
 
-
 	std::string name;
 	std::vector<std::string> majors;
 	std::vector<std::string> minors;
@@ -54,3 +58,5 @@ public:
 	std::vector<std::string> currentPositions;
 	std::string gradProgram;
 };
+
+#endif
