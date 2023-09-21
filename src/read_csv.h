@@ -10,6 +10,20 @@
 struct Row
 {
 	std::vector<std::string> row {};
+	std::vector<std::string> columnNames {};
+
+	std::string getValue(std::string columnName)
+	{
+		int columnIDX = IndexOf(columnNames, columnName);
+
+		if (columnIDX == -1)
+		{
+			std::cerr << "You are trying to access a column that does not exist" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		return row.at(columnIDX);
+	}
 };
 
 struct Column
@@ -25,6 +39,7 @@ public:
 		m_fileName = fileName;
 		readCSV();
 		createCSVMatrix();
+		rowCount = rows.size();
 	}
 	
 	// maybe not the best algorithm but oh well
@@ -70,7 +85,18 @@ public:
 		return column;
 	}
 
+	Row getRow(unsigned int index)
+	{
+		if (index >= rows.size())
+		{
+			std::cerr << "That index is trying to access data outside the size of this array" << std::endl;
+			exit(EXIT_FAILURE);
+		}
 
+		return Row{ .row = rows[index].row, .columnNames = rows[0].row };
+	}
+
+	int rowCount;
 private:
 	std::string m_fileContents;
 	std::string m_fileName;
