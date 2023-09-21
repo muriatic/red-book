@@ -1,11 +1,25 @@
+#ifndef READ_CSV_H
+#define READ_CSV_H
+
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <optional>
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "vector_functions.h"
+
+
+// useful suffix checker, might be beneficial to put in another file
+bool has_suffix(const std::string& str, const std::string& suffix)
+{
+	return str.size() >= suffix.size() &&
+		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+
 
 struct Row
 {
@@ -40,19 +54,20 @@ public:
 		readCSV();
 		createCSVMatrix();
 		rowCount = rows.size();
+		columnNames = rows[0].row;
 	}
 	
 	// maybe not the best algorithm but oh well
 	std::vector<std::string> getColumn(std::string title)
 	{
 		std::vector<std::string> column;
-
+		
 		// search first row
 		int columnIDX = IndexOf(rows[0].row, title);
 
 		if (columnIDX == -1)
 		{
-			std::cerr << "That particular column was not found." << std::endl;
+			std::cerr << "That particular column: " << title << " was not found." << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
@@ -97,6 +112,7 @@ public:
 	}
 
 	int rowCount;
+	std::vector <std::string> columnNames;
 private:
 	std::string m_fileContents;
 	std::string m_fileName;
@@ -105,6 +121,13 @@ private:
 	int quotes : 1 = 0;
 	void readCSV()
 	{
+		// check if the file exists first
+		if (std::filesystem::exists(m_fileName) != 1 || !has_suffix(m_fileName, ".csv"))
+		{
+			std::cerr << "File: " << m_fileName << " does not exist or is not a CSV file." << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
 		std::stringstream contents_stream;
 		std::fstream input(m_fileName, std::ios::in);
 		contents_stream << input.rdbuf();
@@ -142,12 +165,14 @@ private:
 			{
 				Consume();
 				quotes++;
-					// we started with one quote so we know there's at least one
-				unsigned int quote_count = 1;
 				while (Peek().has_value() && (quotes != 0 || (Peek().value() != ',' && Peek().value() != '\n')))
 				{
 					if (Peek().value() == '"')
 					{
+						Consume();
+						quotes++;
+						// we started with one quote so we know there's at least one
+						unsigned int quote_count = 1;
 						while (Peek().has_value() && Peek().value() == '"')
 						{
 							quotes++;
@@ -203,3 +228,5 @@ private:
 		return m_fileContents.at(m_index++);
 	}
 };
+
+#endif
