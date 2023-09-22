@@ -228,6 +228,33 @@ void ValidatePronouns(std::string& pronouns)
 	pronouns = RemoveSpaces(pronouns);
 }
 
+// really just removes the whitespaces and that's it
+void ValidateProfessionalECs(std::vector<std::string>& proECs)
+{
+	for (int i = 0; i < proECs.size(); i++)
+	{
+		proECs[i] = Strip(proECs[i]);
+	}
+}
+
+// really just removes the whitespaces and that's it
+void ValidateAskMeAbout(std::vector<std::string>& askMeAbout)
+{
+	for (int i = 0; i < askMeAbout.size(); i++)
+	{
+		askMeAbout[i] = Strip(askMeAbout[i]);
+		askMeAbout[i] = CapitalizeTitle(askMeAbout[i]);
+	}
+}
+
+// remove whitespace, capitalize
+void ValidateGradProgram(std::string& str)
+{
+	str = Strip(str);
+	str = CapitalizeTitle(str);
+	std::cout << str << std::endl;
+}
+
 void ValidatePerson(Person &person)
 {
 	ValidatePhoneNumber(person.phoneNumber);
@@ -238,4 +265,7 @@ void ValidatePerson(Person &person)
 	ValidateMinors(person.minors);
 	ValidateGradDate(person.gradDate);
 	ValidatePronouns(person.pronouns);
+	ValidateProfessionalECs(person.professionalInvolvement);
+	ValidateAskMeAbout(person.askMeAbout);
+	ValidateGradProgram(person.gradProgram);
 }
