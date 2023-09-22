@@ -184,6 +184,34 @@ void ValidateMajors(std::vector<std::string>& majors)
 
 }
 
+void ValidateMinors(std::vector<std::string>& minors)
+{
+	CSV csv("resources/minors.csv");
+
+	std::vector<std::string> acceptedMinors = csv.getColumn("Minors");
+
+	if (minors.size() == 0)
+	{
+		return;
+	}
+
+	for (int i = 0; i < minors.size(); i++)
+	{
+		// remove leading and trailing whitespace
+		minors[i] = std::regex_replace(minors[i], std::regex("^ +| +$|( ) +"), "$1");
+
+		if (minors[i] == "")
+		{
+			return;
+		}
+
+		// at this point the majors is not in the aliases so we will search for the most similar
+		// BestMatch() will try to find a match within 0.8 similarity, if not it will just throw an error
+		minors[i] = BestMatch(acceptedMinors, minors[i], 0.8);
+	}
+
+}
+
 void ValidatePerson(Person &person)
 {
 	ValidatePhoneNumber(person.phoneNumber);
@@ -191,4 +219,5 @@ void ValidatePerson(Person &person)
 	ValidateLinkedIns(person.linkedin);
 	ValidateCurrentPositions(person.currentPositions);
 	ValidateMajors(person.majors);
+	ValidateMinors(person.minors);
 }
