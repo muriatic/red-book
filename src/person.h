@@ -44,6 +44,9 @@ public:
 	std::vector<std::string> askMeAbout;
 	std::vector<std::string> currentPositions;
 	std::string gradProgram;
+	std::string resumeFile;
+	std::string imageFile;
+	std::vector<std::vector<std::string>> resumeInfo;
 };
 
 #endif
