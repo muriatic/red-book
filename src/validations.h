@@ -6,6 +6,7 @@
 #include "person.h"
 #include "read_csv.h"
 #include "vector_functions.h"
+#include "functions.h"
 
 float CompareString(std::string str1, std::string str2)
 {
@@ -212,6 +213,23 @@ void ValidateMinors(std::vector<std::string>& minors)
 
 }
 
+void ValidateGradDate(std::string& gradDate)
+{
+	// gradDate has been pre-validated so its just mmm-yy
+	std::vector<std::string> monthYear = split(gradDate, '-');
+	std::string month = monthYear[0];
+
+	// add 20 in front since 2 digit year
+	std::string year = "20" + monthYear[1];
+
+	std::vector<std::string> months_mmm{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	std::vector<std::string> months_MMM{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+	int mmmIDX = IndexOf(months_mmm, month);
+
+	gradDate = std::format("{} {}", months_MMM[mmmIDX], year);
+}
+
 void ValidatePerson(Person &person)
 {
 	ValidatePhoneNumber(person.phoneNumber);
@@ -220,4 +238,5 @@ void ValidatePerson(Person &person)
 	ValidateCurrentPositions(person.currentPositions);
 	ValidateMajors(person.majors);
 	ValidateMinors(person.minors);
+	ValidateGradDate(person.gradDate);
 }
