@@ -7,6 +7,58 @@
 #include "read_csv.h"
 #include "vector_functions.h"
 
+float CompareString(std::string str1, std::string str2)
+{
+	size_t str1_length = str1.size();
+	size_t str2_length = str2.size();
+
+	size_t smaller_length = (str1_length < str2_length) ? str1_length : str2_length;
+	size_t greater_length = (str1_length > str2_length) ? str1_length : str2_length;
+
+	int sameCharacters = 0;
+
+	for (int i = 0; i < smaller_length; i++)
+	{
+		// comparing both characters lowercased
+		if (std::tolower(str1[i]) == std::tolower(str2[i]))
+		{
+			sameCharacters++;
+		}
+	}
+	float similarity = (float)sameCharacters / (float)greater_length;
+	return similarity;
+}
+
+// takes a vector of strings, a search value, and a similarity percentage 
+std::string BestMatch(std::vector<std::string> vect, std::string searchValue, float similarity = 0.8)
+{
+	for (int i = 0; i < vect.size(); i++)
+	{
+		if (vect[i] == searchValue)
+		{
+			return vect[i];
+		}
+		// i might want to change this in the future but for now we just return if the similarity is over 0.8
+		// will reiterate over the successPercents vector and find the highest value
+		if (CompareString(vect[i], searchValue) >= similarity)
+		{
+			return vect[i];
+		}
+	}
+
+	std::cerr << "No match found in the vector for " << searchValue << std::endl;
+	exit(EXIT_FAILURE);
+}
+
+std::string ToLower(std::string str)
+{
+	// make lowercase only
+	std::transform(str.begin(), str.end(), str.begin(),
+		[](unsigned char c) { return std::tolower(c); });
+
+	return str;
+}
+
 void ValidatePhoneNumber(std::string& phoneNumber)
 {
 	std::regex rgx("([0-9]{3})[^0-9]*([0-9]{3})[^0-9]*([0-9]{4})");
@@ -26,7 +78,6 @@ void ValidatePhoneNumber(std::string& phoneNumber)
 
 	phoneNumber = std::format("({}) {} - {}", areaCode, telephonePrefix, lineNumber);
 }
-
 
 void ValidateEmail(std::string &email)
 {
@@ -93,7 +144,16 @@ void ValidateCurrentPositions(std::vector<std::string>& currentPositions)
 			return;
 		}
 
-		if (IndexOf(acceptedPositions, currentPositions[i]))
+		// check if current position is in aliases (we're sending it in as lowercased)
+		if (int IDX = IndexOf(ToLower(positionAliases), ToLower(currentPositions[i])) == -1)
+		{
+			currentPositions[i] = acceptedPositions[IDX];
+			continue;
+		}
+
+		// at this point the currentPosition is not in the aliases so we will search for the most similar
+		// BestMatch() will try to find a match within 0.8 similarity, if not it will just throw an error
+		currentPositions[i] = BestMatch(acceptedPositions, currentPositions[i], 0.8);
 	}
 }
 
@@ -103,9 +163,4 @@ void ValidatePerson(Person &person)
 	ValidateEmail(person.email);
 	ValidateLinkedIns(person.linkedin);
 	ValidateCurrentPositions(person.currentPositions);
-	/*for (int i = 0; i < person.currentPositions.size(); i++)
-	{
-		std::cout << person.currentPositions[i] << std::endl;
-	}*/
-	std::cout << "---" << std::endl;
 }
