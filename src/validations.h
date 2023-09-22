@@ -50,15 +50,6 @@ std::string BestMatch(std::vector<std::string> vect, std::string searchValue, fl
 	exit(EXIT_FAILURE);
 }
 
-std::string ToLower(std::string str)
-{
-	// make lowercase only
-	std::transform(str.begin(), str.end(), str.begin(),
-		[](unsigned char c) { return std::tolower(c); });
-
-	return str;
-}
-
 void ValidatePhoneNumber(std::string& phoneNumber)
 {
 	std::regex rgx("([0-9]{3})[^0-9]*([0-9]{3})[^0-9]*([0-9]{4})");
@@ -99,7 +90,7 @@ void ValidateEmail(std::string &email)
 void ValidateLinkedIns(std::string& linkedin)
 {
 	// remove all spaces
-	std::remove_if(linkedin.begin(), linkedin.end(), isspace);
+	linkedin = RemoveSpaces(linkedin);
 
 	// make lowercase only
 	std::transform(linkedin.begin(), linkedin.end(), linkedin.begin(),
@@ -230,6 +221,13 @@ void ValidateGradDate(std::string& gradDate)
 	gradDate = std::format("{} {}", months_MMM[mmmIDX], year);
 }
 
+// this just makes the pronouns all caps and removes all spaces
+void ValidatePronouns(std::string& pronouns)
+{
+	pronouns = ToUpper(pronouns);
+	pronouns = RemoveSpaces(pronouns);
+}
+
 void ValidatePerson(Person &person)
 {
 	ValidatePhoneNumber(person.phoneNumber);
@@ -239,4 +237,5 @@ void ValidatePerson(Person &person)
 	ValidateMajors(person.majors);
 	ValidateMinors(person.minors);
 	ValidateGradDate(person.gradDate);
+	ValidatePronouns(person.pronouns);
 }
