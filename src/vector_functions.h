@@ -19,7 +19,7 @@ template <typename T> int IndexOf(std::vector<T> vect, T value)
 	return idx;
 }
 
-void ToLower(std::vector<std::string>& vect)
+std::vector<std::string> ToLower(std::vector<std::string> vect)
 {
 	for (std::string str : vect)
 	{
@@ -27,6 +27,8 @@ void ToLower(std::vector<std::string>& vect)
 		std::transform(str.begin(), str.end(), str.begin(),
 			[](unsigned char c) { return std::tolower(c); });
 	}
+
+	return vect;
 }
 
 #endif
