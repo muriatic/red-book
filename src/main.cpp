@@ -1,13 +1,18 @@
 #include <iostream>
 #include <vector>
+#include <filesystem>
 
 #include "read_csv.h"
 #include "person.h"
 #include "validations.h"
 
+
 //! note all CSVs MUST be utf-8 
 //! not utf-8 with BOM, etc
 //! CSVs must have one entry per line, sometimes they get split which screws up the system
+
+std::vector<std::string> Validations::resumeFiles;
+std::vector<std::string> Validations::imageFiles;
 
 int main()
 {
@@ -29,11 +34,16 @@ int main()
 		}
 	}
 
+	// gets resume files
+	Validations::resumeFiles = ListDir("resumes");
+
+	// gets image files
+	Validations::imageFiles = ListDir("professional_headshots");
 
 	// validate each brother
 	for (int i = 0; i < brothers.size(); i++)
 	{
-		ValidatePerson(brothers[i]);
+		Validations validations(brothers[i]);
 	}
 
 
