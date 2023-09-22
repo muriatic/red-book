@@ -12,12 +12,11 @@ float CompareString(std::string str1, std::string str2)
 	size_t str1_length = str1.size();
 	size_t str2_length = str2.size();
 
-	size_t smaller_length = (str1_length < str2_length) ? str1_length : str2_length;
-	size_t greater_length = (str1_length > str2_length) ? str1_length : str2_length;
+	size_t lesser_length = (str1_length < str2_length) ? str1_length : str2_length;
 
 	int sameCharacters = 0;
 
-	for (int i = 0; i < smaller_length; i++)
+	for (int i = 0; i < lesser_length; i++)
 	{
 		// comparing both characters lowercased
 		if (std::tolower(str1[i]) == std::tolower(str2[i]))
@@ -25,7 +24,7 @@ float CompareString(std::string str1, std::string str2)
 			sameCharacters++;
 		}
 	}
-	float similarity = (float)sameCharacters / (float)greater_length;
+	float similarity = (float)sameCharacters / (float)lesser_length;
 	return similarity;
 }
 
@@ -157,10 +156,39 @@ void ValidateCurrentPositions(std::vector<std::string>& currentPositions)
 	}
 }
 
+void ValidateMajors(std::vector<std::string>& majors) 
+{
+	CSV csv("resources/majors.csv");
+
+	std::vector<std::string> acceptedMajors = csv.getColumn("Majors");
+
+	if (majors.size() == 0)
+	{
+		return;
+	}
+
+	for (int i = 0; i < majors.size(); i++)
+	{
+		// remove leading and trailing whitespace
+		majors[i] = std::regex_replace(majors[i], std::regex("^ +| +$|( ) +"), "$1");
+
+		if (majors[i] == "")
+		{
+			return;
+		}
+
+		// at this point the majors is not in the aliases so we will search for the most similar
+		// BestMatch() will try to find a match within 0.8 similarity, if not it will just throw an error
+		majors[i] = BestMatch(acceptedMajors, majors[i], 0.8);
+	}
+
+}
+
 void ValidatePerson(Person &person)
 {
 	ValidatePhoneNumber(person.phoneNumber);
 	ValidateEmail(person.email);
 	ValidateLinkedIns(person.linkedin);
 	ValidateCurrentPositions(person.currentPositions);
+	ValidateMajors(person.majors);
 }
