@@ -5,6 +5,9 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 std::vector<std::string> split(const std::string& s, char delim) {
 	std::vector<std::string> result;
@@ -90,6 +93,18 @@ std::string CapitalizeTitle(std::string str)
 	}
 
 	return title;
+}
+
+std::vector<std::string> ListDir(std::string directory)
+{
+	std::vector<std::string> files;
+
+	for (const auto& entry : fs::directory_iterator(directory))
+	{
+		files.push_back(entry.path().generic_string());
+	}
+
+	return files;
 }
 
 #endif
