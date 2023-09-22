@@ -6,3 +6,5 @@
 *.vcxproj.user
 /resources
 /x64
+/professional_headshots
+/resumes
