@@ -6,6 +6,14 @@
 #include <sstream>
 #include <regex>
 #include <filesystem>
+#include <numeric>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
+#include <ostream>
 
 namespace fs = std::filesystem;
 
@@ -106,5 +114,41 @@ std::vector<std::string> ListDir(std::string directory)
 
 	return files;
 }
+
+std::string ReadLine()
+{
+	std::string userMessage;
+	//std::cin.ignore('\n');
+	std::getline(std::cin >> std::ws, userMessage);
+	//std::cin.clear();
+	return userMessage;
+}
+
+
+template <typename T>
+std::string Join(const T& v, const std::string& delim) {
+	std::ostringstream s;
+	for (const auto& i : v) {
+		if (&i != &v[0]) {
+			s << delim;
+		}
+		s << i;
+	}
+	return s.str();
+}
+
+//std::string EXEC(const char* cmd)
+//{
+//	std::array<char, 128> buffer;
+//	std::string result;
+//	std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+//	if (!pipe) {
+//		throw std::runtime_error("popen() failed!");
+//	}
+//	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+//		result += buffer.data();
+//	}
+//	return result;
+//}
 
 #endif
