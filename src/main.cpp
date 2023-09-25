@@ -5,7 +5,7 @@
 #include "read_csv.h"
 #include "person.h"
 #include "validations.h"
-
+#include "resume_parser.h"
 
 //! note all CSVs MUST be utf-8 
 //! not utf-8 with BOM, etc
@@ -33,6 +33,8 @@ int main()
 			brothers.push_back(Person(row));
 		}
 	}
+	//std::cout << "Brother Data Loaded";
+	//std::cin.get();
 
 	// gets resume files
 	Validations::resumeFiles = ListDir("resumes");
@@ -40,12 +42,24 @@ int main()
 	// gets image files
 	Validations::imageFiles = ListDir("professional_headshots");
 
+	std::cout << "Resume and Professional Headshot Files FOUND" << std::endl;
+
 	// validate each brother
-	for (int i = 0; i < brothers.size(); i++)
+	for (Person brother : brothers)
 	{
-		Validations validations(brothers[i]);
+		Validations validations(brother);
 	}
 
+	std::cout << "Brothers Validated";
+	//std::cin.get();
+
+
+	// read resume info for each brother
+	for (Person brother : brothers)
+	{
+		GetResumeInfo(brother);
+		brother.Save();
+	}
 
 	return 0;
 }
