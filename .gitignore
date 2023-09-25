@@ -32,3 +32,4 @@
 *.AssemblyAttributes.cs
 bin
 obj
+*.brother
