@@ -268,6 +268,9 @@ struct Validations{
 			std::cerr << "Resume for " << name << " was not found. Was expecting " << resumeFile << std::endl;
 			exit(EXIT_FAILURE);
 		}
+
+		// last second remove the directory name
+		resumeFile = std::format("resume - {}.pdf", name);
 	}
 
 	void ValidateImageFile(std::string name, std::string& imageFile)
