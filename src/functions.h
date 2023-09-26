@@ -14,8 +14,29 @@
 #include <string>
 #include <array>
 #include <ostream>
+#include <map>
 
 namespace fs = std::filesystem;
+
+// get index of substring in string
+int IndexOf(std::string str, std::string substr)
+{
+	size_t idx = str.find(substr);
+
+	// return idx if found, else -1
+	return idx != std::string::npos ? idx : -1;
+}
+
+template <typename T, typename O> std::vector<T> GetKeys(std::map<T, O> mmap)
+{
+	std::vector<T> keys;
+	for (auto const& imap : mmap)
+	{
+		keys.push_back(imap.first);
+	}
+
+	return keys;
+}
 
 std::vector<std::string> split(const std::string& s, char delim) {
 	std::vector<std::string> result;
@@ -29,6 +50,21 @@ std::vector<std::string> split(const std::string& s, char delim) {
 	}
 
 	return result;
+}
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+	std::string token;
+	std::vector<std::string> res;
+
+	while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+		token = s.substr(pos_start, pos_end - pos_start);
+		pos_start = pos_end + delim_len;
+		res.push_back(token);
+	}
+
+	res.push_back(s.substr(pos_start));
+	return res;
 }
 
 std::string ToLower(std::string str)
@@ -137,18 +173,33 @@ std::string Join(const T& v, const std::string& delim) {
 	return s.str();
 }
 
-//std::string EXEC(const char* cmd)
-//{
-//	std::array<char, 128> buffer;
-//	std::string result;
-//	std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
-//	if (!pipe) {
-//		throw std::runtime_error("popen() failed!");
-//	}
-//	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-//		result += buffer.data();
-//	}
-//	return result;
-//}
+std::string EXEC(const char* cmd)
+{
+	std::array<char, 128> buffer;
+	std::string result;
+	std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+		result += buffer.data();
+	}
+	return result;
+}
+
+std::string EXEC(std::string cmd_str)
+{
+	const char* cmd = cmd_str.c_str();
+	std::array<char, 128> buffer;
+	std::string result;
+	std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+		result += buffer.data();
+	}
+	return result;
+}
 
 #endif
