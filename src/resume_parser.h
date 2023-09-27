@@ -135,6 +135,85 @@ void ManualResumeInput(Person& person)
     person.resumeInfo = jobEntries;
 }
 
+float getDateLikelihood(std::string line)
+{
+    std::vector<std::string> months = { "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
+    std::vector<std::string> years = { "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
+
+    std::regex rgx("\w+");
+    std::smatch match;
+
+    std::vector<std::string> words;
+
+    int is_date_related = 0;
+    int total = 0;
+
+    while (std::regex_search(line, match, rgx)) {
+        std::string word = match.str(0);
+
+        // suffix to find the rest of the string.
+        line = match.suffix().str();
+
+        total++;
+
+        if (IndexOf(months, ToLower(word)) != -1)
+        {
+            is_date_related++;
+            continue;
+        }
+        if (IndexOf(years, ToLower(word)) != -1)
+        {
+            is_date_related++;
+            continue;
+        }
+    }
+
+    return ((float)is_date_related / (float)total);
+}
+
+float getLocationLikelihood(std::string line)
+{
+    std::regex rgx("(\w+)\s*,\s*(\w+)");
+    std::smatch match;
+
+    std::vector<std::string> states = { "alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota", "ohio", "oklahoma", "oregon", "pennsylvania", "rhode island", "south carolina", "south dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington", "west virginia", "wisconsin", "wyoming", "district of columbia", "american samoa", "guam", "northern mariana islands", "puerto rico", "united states minor outlying islands", "u.s. virgin islands", "al", "ak", "az", "ar", "ca", "co", "ct", "de", "fl", "ga", "hi", "id", "il", "in", "ia", "ks", "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj", "nm", "ny", "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", "wa", "wv", "wi", "wy", "dc", "as", "gu", "mp", "pr", "um", "vi" };
+
+    if (std::regex_search(line, match, rgx))
+    {
+        if (match.size() == 3)
+        {
+            if (IndexOf(states, ToLower(match[2].str())) != -1)
+            {
+                return 1.0f;
+            }
+        }
+    }
+
+    
+    std::regex words_rgx("\w+");
+    std::smatch wordsMatch;
+
+    int is_location_related = 0;
+    int total = 0;
+
+    while (std::regex_search(line, wordsMatch, words_rgx)) {
+        std::string word = wordsMatch.str(0);
+
+        // suffix to find the rest of the string.
+        line = wordsMatch.suffix().str();
+
+        total++;
+
+        if (IndexOf(states, ToLower(word)) != -1)
+        {
+            is_location_related++;
+            continue;
+        }
+    }
+
+    return ((float)is_location_related / (float)total);
+}
+
 void ParseResumeEntry(Person& person, std::string& resumeEntry)
 {
     //std::vector<std::string> lines = split(resumeEntry, '\n');
@@ -248,8 +327,56 @@ void ParseResumeEntry(Person& person, std::string& resumeEntry)
         }
     }
 
+    std::vector<std::map<std::string, std::string>> combinedMaps;
 
+    bool logical = true;
+    for (auto m : mmap)
+    {
+        std::vector<std::string> sub_list;
+        for (int i = 0; i < m.second.size(); i++)
+        {
+            float likelihoodPCT = 0.5;
+            if (getDateLikelihood(m.second[i]) >= likelihoodPCT)
+            {
+                sub_list.push_back("date");
+                
+                if (i != 1)
+                {
+                    logical = false;
+                }
+            }
 
+            else if (getLocationLikelihood(m.second[i]) >= likelihoodPCT)
+            {
+                sub_list.push_back("location");
+
+                if (i != 3)
+                {
+                    logical = false;
+                }
+            }
+
+            else if (logical && i == 0)
+            {
+                sub_list.push_back("company");
+            }
+
+            else if (logical && i == 2)
+            {
+                sub_list.push_back("position");
+            }
+        }
+
+        std::map<std::string, std::string> tempMap;
+        // quickly iterate through sub_list
+        for (int i = 0; i < sub_list.size(); i++)
+        {
+            tempMap.insert({ sub_list[i], m.second[i]});
+        }
+        combinedMaps.push_back(tempMap);
+    }
+
+    // now i need to process the combinedMap
 }
 
 // this will just be manual for now
