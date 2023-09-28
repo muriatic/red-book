@@ -45,20 +45,22 @@ int main()
 	std::cout << "Resume and Professional Headshot Files FOUND" << std::endl;
 
 	// validate each brother
-	for (Person brother : brothers)
+	for (int i = 0; i < brothers.size(); i++)
 	{
-		Validations validations(brother);
+		Validations validations(brothers[i]);
 	}
 
-	std::cout << "Brothers Validated";
+	//std::cout << "Brothers Validated";
 	//std::cin.get();
 
+	GetResumeInfo(brothers);
 
 	// read resume info for each brother
-	for (Person brother : brothers)
+	for (int i = 0; i < brothers.size(); i++)
 	{
-		GetResumeInfo(brother);
-		brother.Save();
+		//std::cout << brother.resumeFile << std::endl;
+		brothers[i].Save();
+		//break;
 	}
 
 	return 0;
