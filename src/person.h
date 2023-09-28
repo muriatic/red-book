@@ -6,6 +6,7 @@
 #include <sstream>
 #include <regex>
 #include <fstream>
+#include <map>
 
 #include "functions.h"
 
@@ -55,6 +56,35 @@ class Person
 		row += ">";
 		return row;
 	}
+	std::string CreateRow(std::vector<std::map<std::string, std::string>> line)
+	{
+		std::string row;
+		row += "<";
+		for (std::map<std::string, std::string> entry : line)
+		{
+			row += "{";
+			int count = entry.size();
+			for (auto m : entry)
+			{
+				row += m.first;
+				row += ":";
+				row += m.second;
+
+				// this ensures that commas are only in between entries
+				if (count != 1)
+				{
+					row += ",";
+				}
+
+				count--;
+			}
+			row += "}";
+		}
+
+		row += ">";
+
+		return row;
+	}
 
 public:
 	Person(Row row)
@@ -85,6 +115,7 @@ public:
 		rows.push_back(CreateRow(resumeFile));
 		rows.push_back(CreateRow(imageFile));
 		rows.push_back(CreateRow(resumeInfo));
+		rows.push_back(CreateRow(parsedResumeInfo));
 		
 		std::string contents = Join(rows, "\n");
 
@@ -107,6 +138,7 @@ public:
 	std::string resumeFile;
 	std::string imageFile;
 	std::vector<std::vector<std::string>> resumeInfo;
+	std::vector<std::map<std::string, std::string>> parsedResumeInfo;
 };
 
 #endif
