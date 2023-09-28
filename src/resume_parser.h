@@ -75,8 +75,9 @@ std::string FormatDate(std::string date)
     std::vector<std::string> dates = split(date, ';');
     if (dates.size() != 2)
     {
-        std::cerr << "2 dates were not provided and separated by a semicolon." << std::endl;
-        exit(EXIT_FAILURE);
+        std::cout << "Enter date range separated by semicolon (e.g. 2015 - 2020 would be entered as 2015;2020): " << std::endl;
+        
+        return FormatDate(ReadLine());
     }
 
     formattedDate = dates[0] + " - " + dates[1];
@@ -103,36 +104,34 @@ void ManualResumeInput(Person& person)
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
-    std::vector<std::vector<std::string>> jobEntries;
     for (int i = 0; i < numberOfEntries; i++)
     {
-        std::vector<std::string> jobEntry;
+        std::map<std::string, std::string> jobEntryMap;
         std::cout << "Enter company name: " << std::endl;
 
-        jobEntry.push_back(ReadLine());
+        jobEntryMap.insert({"company", ReadLine()});
 
         std::cout << "Enter date range separated by semicolon (e.g. 2015 - 2020 would be entered as 2015;2020): " << std::endl;
 
         std::string formattedDate = FormatDate(ReadLine());
 
-        jobEntry.push_back(formattedDate);
+        jobEntryMap.insert({ "date", formattedDate });
 
         std::cout << "Enter Job title: " << std::endl;
-        jobEntry.push_back(ReadLine());
+        jobEntryMap.insert({ "position", ReadLine() });
 
         std::cout << "Enter location: " << std::endl;
-        jobEntry.push_back(ReadLine());
+        jobEntryMap.insert({ "location", ReadLine() });
 
         std::cout << "Confirm that the following information is correct:" << std::endl;
         std::cout << "(0) Nothing is wrong" << std::endl;
-        std::cout << "(1) Company Name: " << jobEntry[0] << std::endl;
-        std::cout << "(2) Date range: " << jobEntry[1] << std::endl;
-        std::cout << "(3) Job title: " << jobEntry[2] << std::endl;
-        std::cout << "(4) Location: " << jobEntry[3] << std::endl;
-        jobEntries.push_back(jobEntry);
-    }
+        std::cout << "(1) Company Name: " << jobEntryMap.at("company") << std::endl;
+        std::cout << "(2) Date range: " << jobEntryMap.at("date") << std::endl;
+        std::cout << "(3) Job title: " << jobEntryMap.at("position") << std::endl;
+        std::cout << "(4) Location: " << jobEntryMap.at("location") << std::endl;
 
-    person.resumeInfo = jobEntries;
+        person.parsedResumeInfo.push_back(jobEntryMap);
+    }
 }
 
 float getDateLikelihood(std::string line)
@@ -376,7 +375,7 @@ void ParseResumeEntry(Person& person, std::string& resumeEntry)
         combinedMaps.push_back(tempMap);
     }
 
-    // now i need to process the combinedMap
+    person.parsedResumeInfo = combinedMaps;
 }
 
 // this will just be manual for now
