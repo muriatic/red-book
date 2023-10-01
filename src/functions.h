@@ -27,6 +27,18 @@ int IndexOf(std::string str, std::string substr)
 	return idx != std::string::npos ? idx : -1;
 }
 
+// useful suffix checker, might be beneficial to put in another file
+bool has_suffix(const std::string& str, const std::string& suffix)
+{
+	return str.size() >= suffix.size() &&
+		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+bool has_prefix(std::string str, std::string prefix)
+{
+	return (IndexOf(str, prefix) == 0) ? true : false;
+}
+
 template <typename T, typename O> std::vector<T> GetKeys(std::map<T, O> mmap)
 {
 	std::vector<T> keys;
@@ -90,6 +102,21 @@ std::string RemoveSpaces(std::string str)
 {
 	// remove all spaces
 	str.erase(remove(str.begin(), str.end(), ' '), str.end());
+
+	return str;
+}
+
+// removes trailing and leading selected character 
+std::string Strip(std::string str, char c)
+{
+	if (has_prefix(str, std::string (1, c)))
+	{
+		str = str.substr(1, str.size() - 1);
+	}
+	if (has_suffix(str, std::string (1, c)))
+	{
+		str = str.substr(0, str.size() - 1);
+	}
 
 	return str;
 }
@@ -201,5 +228,6 @@ std::string EXEC(std::string cmd_str)
 	}
 	return result;
 }
+
 
 #endif
