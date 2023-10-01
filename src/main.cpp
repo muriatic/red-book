@@ -1,11 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <fstream>
 
 #include "read_csv.h"
 #include "person.h"
 #include "validations.h"
 #include "resume_parser.h"
+#include "functions.h"
+#include "multithreader.cpp"
+
+int threads = 2;
 
 //! note all CSVs MUST be utf-8 
 //! not utf-8 with BOM, etc
@@ -14,13 +19,13 @@
 std::vector<std::string> Validations::resumeFiles;
 std::vector<std::string> Validations::imageFiles;
 
-int main()
-{
-	std::vector<Person> brothers;
+std::string brotherFolder = "brothers";
 
+void CreateBrothers(std::vector<Person>& brothers)
+{
 	// at this point you must make sure that the CSV doesn't have any anomalies like using , instead of / as a delimiter
 	CSV csv("resources/Red Book Questions.csv");
-	
+
 	// create the list of brothers
 	// starting with one to skip the title row
 	for (int i = 1; i < csv.rowCount; i++)
@@ -33,8 +38,8 @@ int main()
 			brothers.push_back(Person(row));
 		}
 	}
-	//std::cout << "Brother Data Loaded";
-	//std::cin.get();
+	std::cout << "Brother Data Loaded";
+	std::cin.get();
 
 	// gets resume files
 	Validations::resumeFiles = ListDir("resumes");
@@ -50,18 +55,75 @@ int main()
 		Validations validations(brothers[i]);
 	}
 
-	//std::cout << "Brothers Validated";
-	//std::cin.get();
+	std::cout << "Brothers Validated";
+	std::cin.get();
 
 	GetResumeInfo(brothers);
 
 	// read resume info for each brother
 	for (int i = 0; i < brothers.size(); i++)
 	{
-		//std::cout << brother.resumeFile << std::endl;
 		brothers[i].Save();
-		//break;
 	}
+}
+
+void ReadBrothers(std::vector<Person>& brothers)
+{
+	std::vector<std::string> brotherFiles;
+	{
+		std::vector<std::string> files = ListDir(brotherFolder);
+
+		for (int i = 0; i < files.size(); i++)
+		{
+			if (has_suffix(files[i], ".brother"))
+			{
+				brotherFiles.push_back(files[i]);
+			}
+		}
+	}
+
+	if (brotherFiles.size() == 0)
+	{
+		std::cerr << "Failed to read any brothers in " << brotherFolder << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	for (int i = 0; i < brotherFiles.size(); i++)
+	{
+		std::fstream brotherFile(brotherFiles[i]);
+		std::vector<std::string> lines;
+		std::string line;
+		while (std::getline(brotherFile, line))
+		{
+			lines.push_back(line);
+		}
+
+		brothers.push_back({ lines });
+	}
+}
+
+int main()
+{
+	std::vector<Person> brothers;
+
+	ReadBrothers(brothers);
+	
+	std::vector<std::string> brotherNames;
+	std::vector<std::string> brotherFileNames;
+	// process the photos
+	for (int i = 0; i < brothers.size(); i++)
+	{
+		brotherNames.push_back(brothers[i].name);
+		brotherFileNames.push_back(brothers[i].imageFile);
+	}
+
+	ThreadHandler thread_handler(brotherNames, brotherFileNames, "professional_headshots", "processed_images", threads);
+
+	//thread_handler.CreateThreads();
+
+	//string returnMessage = thread_handler.ConvertThreadResultsToString(';');
+
+
 
 	return 0;
 }
