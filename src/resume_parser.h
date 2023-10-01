@@ -381,28 +381,30 @@ void ParseResumeEntry(Person& person, std::string& resumeEntry)
 // this will just be manual for now
 void GetResumeInfo(std::vector<Person> &brothers)
 {
-    std::string output;
-    ReadResumes(brothers, output);
+    //std::string output;
+    //ReadResumes(brothers, output);
 
-    std::vector<std::string> resumeEntries = split(Strip(output), "$/|/$");
+    //std::vector<std::string> resumeEntries = split(Strip(output), "$/|/$");
 
     // just check that there are equal number of brothers and entries (unlikely error but could be bad if not checked for)
-    if (resumeEntries.size() != brothers.size())
+    /*if (resumeEntries.size() != brothers.size())
     {
         std::cerr << "There are not the same number of brothers as there are resume entries. " << brothers.size() << " brothers and " << resumeEntries.size() << " resume entries" << std::endl;
         exit(EXIT_FAILURE);
-    }
+    }*/
 
-    for (int i = 0; i < resumeEntries.size(); i++)
+    // just manually go through brothers
+    for (int i = 0; i < brothers.size(); i++)
     {
-        if (Strip(resumeEntries[i]) == "")
-        {
-            // this will need to do a manual entry
-            ManualResumeInput(brothers[i]);
-            continue;
-        }
+        ManualResumeInput(brothers[i]);
+        //if (Strip(resumeEntries[i]) == "")
+        //{
+        //    // this will need to do a manual entry
+        //    ManualResumeInput(brothers[i]);
+        //    continue;
+        //}
 
-        ParseResumeEntry(brothers[i], resumeEntries[i]);
+        //ParseResumeEntry(brothers[i], resumeEntries[i]);
     }
         /*
         int selection;
