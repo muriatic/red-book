@@ -10,15 +10,7 @@
 #include <filesystem>
 
 #include "vector_functions.h"
-
-
-// useful suffix checker, might be beneficial to put in another file
-bool has_suffix(const std::string& str, const std::string& suffix)
-{
-	return str.size() >= suffix.size() &&
-		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
-
+#include "functions.h"
 
 
 struct Row
