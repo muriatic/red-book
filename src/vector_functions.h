@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 template <typename T> int IndexOf(std::vector<T> vect, T value)
 {
@@ -29,6 +30,14 @@ std::vector<std::string> ToLower(std::vector<std::string> vect)
 	}
 
 	return vect;
+}
+
+template <typename T> void PrintVector(std::vector<T> vect)
+{
+	for (int i = 0; i < vect.size(); i++)
+	{
+		std::cout << vect[i] << std::endl;
+	}
 }
 
 #endif
