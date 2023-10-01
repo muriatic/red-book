@@ -12,6 +12,9 @@
 
 int threads = 2;
 
+
+namespace fs = std::filesystem;
+
 //! note all CSVs MUST be utf-8 
 //! not utf-8 with BOM, etc
 //! CSVs must have one entry per line, sometimes they get split which screws up the system
@@ -20,6 +23,9 @@ std::vector<std::string> Validations::resumeFiles;
 std::vector<std::string> Validations::imageFiles;
 
 std::string brotherFolder = "brothers";
+std::string rawImageFolder = "professional_headshots";
+
+std::filesystem::path CWD = std::filesystem::current_path();
 
 void CreateBrothers(std::vector<Person>& brothers)
 {
@@ -114,16 +120,31 @@ int main()
 	for (int i = 0; i < brothers.size(); i++)
 	{
 		brotherNames.push_back(brothers[i].name);
+
+		int subdirectoryIDX = IndexOf(brothers[i].imageFile, "/");
+		subdirectoryIDX = (subdirectoryIDX == -1) ? IndexOf(brothers[i].imageFile, "\\") : subdirectoryIDX;
+
+		if (subdirectoryIDX != -1)
+		{
+			brothers[i].imageFile = brothers[i].imageFile.substr(subdirectoryIDX+1, brothers[i].imageFile.size() - subdirectoryIDX);
+		}
+
+		fs::path imagePath(brothers[i].imageFile);
+		fs::path imageFolderPath("professional_headshots");
+
+		fs::path fullPath = CWD / imageFolderPath / imagePath;
+
 		brotherFileNames.push_back(brothers[i].imageFile);
 	}
 
 	ThreadHandler thread_handler(brotherNames, brotherFileNames, "professional_headshots", "processed_images", threads);
 
-	//thread_handler.CreateThreads();
-
-	//string returnMessage = thread_handler.ConvertThreadResultsToString(';');
+	thread_handler.CreateThreads();
 
 
+	//std::vector<std::string> processedHeadshots = thread_handler.ConvertThreadResultsToVect();
+
+	//PrintVector(processedHeadshots);
 
 	return 0;
 }
