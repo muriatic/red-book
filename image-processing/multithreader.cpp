@@ -76,20 +76,19 @@ class ThreadHandler
 
 
 		// converts multilayered threadResults into a single string split by delimiters
-		std::string ConvertThreadResultsToString(char delimiter = ';')
+		std::vector<std::string> ConvertThreadResultsToVect()
 		{
-			std::string resultsAsString;
+			std::vector<std::string> results;
 			for (int i = 0; i < threadResults.size(); i++)
 			{
 				for (int j = 0; j < threadResults[i].size(); j++)
 				{
-					resultsAsString += threadResults[i][j];
-					resultsAsString += delimiter;
+					results.push_back(threadResults[i][j]);
 				}
 
 			}
 
-			return resultsAsString;
+			return results;
 		}
 
 
